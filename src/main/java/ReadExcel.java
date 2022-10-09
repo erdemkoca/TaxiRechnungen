@@ -16,7 +16,8 @@ import static java.lang.Integer.valueOf;
 
 public class ReadExcel {
     private static final String NAME = "src/main/resources/2022.01.xlsx";
-    private static final String STR1 = "src/main/resources/test4.xlsx";
+    private static final String STR1 = "src/main/resources/";
+//    private static final String STR1 = System.getProperty("user.home") + "/Desktop";
 
     //private static final String NAME = "/cvbn/Desktop/2022.01.xlsx";
     public static void main (String []args) throws IOException {
@@ -31,8 +32,8 @@ public class ReadExcel {
             Iterator<Sheet> sheets = workbook.sheetIterator();
             while (sheets.hasNext()) {
                 Sheet sh = sheets.next();
-                System.out.println("Sheet name is" + sh.getSheetName());
-                System.out.println("------------------");
+                //System.out.println("Sheet name is" + sh.getSheetName());
+                //System.out.println("------------------");
                 Iterator<Row> iterator = sh.iterator();
                 while (iterator.hasNext()) {
                     Row row = iterator.next();
@@ -40,9 +41,9 @@ public class ReadExcel {
                     while (cellIterator.hasNext()) {
                         Cell cell = cellIterator.next();
                         String cellValue = dataFormatter.formatCellValue(cell);
-                        System.out.println(cellValue + "\t");
+                        //System.out.println(cellValue + "\t");
                     }
-                    System.out.println();
+                    //System.out.println();
 
                 }
                 boolean line = false;
@@ -69,21 +70,30 @@ public class ReadExcel {
 
                 String firstDayDate = "1/" + args[1] + "/" + args[0];
 
-                int lastDayOfMonth = Calendar.getInstance().getActualMaximum(Calendar.DATE);
-                String lastDayDate = Integer.toString(lastDayOfMonth) + "/" + args[1] + "/" + args[0];
+                int lastDayOfMonth; // = Calendar.getInstance().getActualMaximum(Calendar.DATE);
+                if (args[1] == "2") {
+                    lastDayOfMonth = 28;
+                } else if (valueOf(args[1]) % 2 == 0) {
+                    lastDayOfMonth  = 30;
+                } else {
+                    lastDayOfMonth = 31;
+                }
+                String lastDayDate = lastDayOfMonth + "/" + args[1] + "/" + args[0];
+
                 firstDayDate = firstDayDate.replace("/",".");
                 lastDayDate = lastDayDate.replace("/",".");
-                sh.getRow(41).getCell(14).setCellValue(arg.length * 64.45);
-                sh.getRow(21).getCell(3).setCellValue(arg.length * 64.45);
+                sh.getRow(41).getCell(14).setCellValue((arg.length - 2) * 64.45);
+                sh.getRow(21).getCell(3).setCellValue((arg.length - 2) * 64.45);
                 sh.getRow(15).getCell(4).setCellValue("Abrechnungsperiode " + firstDayDate + " - " + lastDayDate);
                 sh.getRow(7).getCell(7).setCellValue(lastDayDate);
 
 
             }
-            FileOutputStream out = new FileOutputStream(STR1);
+            String specificSTR = STR1 + args[0]+".0" + args[1] + ".xlsx";
+            FileOutputStream out = new FileOutputStream(specificSTR);
             workbook.write(out);
             out.close();
-            workbook = new XSSFWorkbook(new FileInputStream(new File(STR1)));
+            workbook = new XSSFWorkbook(new FileInputStream(new File(specificSTR)));
             workbook.close();
         } catch (Exception e){
             e.printStackTrace();

@@ -86,6 +86,9 @@ public class ReadExcel {
                 sh.getRow(21).getCell(3).setCellValue((arg.length - 2) * 64.45);
                 sh.getRow(15).getCell(4).setCellValue("Abrechnungsperiode " + firstDayDate + " - " + lastDayDate);
                 sh.getRow(7).getCell(7).setCellValue(lastDayDate);
+                String lastTwoOfCharYear = "" + args[0].charAt(args[0].length()-2) + args[0].charAt(args[0].length()-1);
+                String invoiceNumber = "RECHNUNGSNR.: " + lastTwoOfCharYear + "." + args[1];
+                sh.getRow(6).getCell(7).setCellValue(invoiceNumber);
 
 
             }

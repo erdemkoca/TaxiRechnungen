@@ -3,6 +3,11 @@ import java.util.Scanner;
 
 import static java.lang.Integer.parseInt;
 
+/**
+ * The files are generated while this class runs.
+ * It will demand from the commandline to input the year, month and the days of the transportation.
+ * With these informations the excel file will be generated.
+ */
 public class Start {
     public static void main(String args[]) throws IOException {
         System.out.println("Fatura hangi yıla ait?");
@@ -32,7 +37,6 @@ public class Start {
         }
         System.out.println("Faturada ayın hangi günleri listelenmelidir?");
         System.out.println("Lütfen ayın günlerini boşluklarla listeleyin.");
-
         while (true) {
             String dayScanner = scan.nextLine();
             String dayString[] = dayScanner.split(" ");

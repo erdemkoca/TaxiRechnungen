@@ -63,8 +63,8 @@ public class ReadExcel {
                     }
                     sh.getRow(7 + i + k).getCell(8).setCellValue(arg[i] + "." + arg[1] + "." + arg[0]);
                     //System.out.println(sh.getRow(7 + i).getCell(8));
-                    sh.getRow(7 + i + k).getCell(10).setCellValue("Hinfahrt CHF 31.75 - Rückfahrt CHF 32.70");
-                    sh.getRow(7 + i + k).getCell(14).setCellValue(64.45);
+                    sh.getRow(7 + i + k).getCell(10).setCellValue("Hinfahrt CHF 32.25 - Rückfahrt CHF 33.20");
+                    sh.getRow(7 + i + k).getCell(14).setCellValue(65.45);
 
                 }
 
@@ -82,8 +82,8 @@ public class ReadExcel {
 
                 firstDayDate = firstDayDate.replace("/",".");
                 lastDayDate = lastDayDate.replace("/",".");
-                sh.getRow(41).getCell(14).setCellValue((arg.length - 2) * 64.45);
-                sh.getRow(21).getCell(3).setCellValue((arg.length - 2) * 64.45);
+                sh.getRow(41).getCell(14).setCellValue((arg.length - 2) * 65.45);
+                sh.getRow(21).getCell(3).setCellValue((arg.length - 2) * 65.45);
                 sh.getRow(15).getCell(4).setCellValue("Abrechnungsperiode " + firstDayDate + " - " + lastDayDate);
                 sh.getRow(7).getCell(7).setCellValue(lastDayDate);
                 String lastTwoOfCharYear = "" + args[0].charAt(args[0].length()-2) + args[0].charAt(args[0].length()-1);
@@ -92,7 +92,13 @@ public class ReadExcel {
 
 
             }
-            String specificSTR = STR1 + args[0]+".0" + args[1] + ".xlsx";
+            String specificSTR = "";
+            if (args[0].length() == 1) {
+                specificSTR = STR1 + args[0]+".0" + args[1] + ".xlsx";
+            } else {
+                specificSTR = STR1 + args[0]+"." + args[1] + ".xlsx";
+
+            }
             FileOutputStream out = new FileOutputStream(specificSTR);
             workbook.write(out);
             out.close();

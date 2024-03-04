@@ -57,6 +57,6 @@ public class Start {
             }
         }
         String argument [] = argumentExcel.split(" ");
-        ReadExcel.main(argument);
+        ReadExcel2.main(argument);
     }
 }

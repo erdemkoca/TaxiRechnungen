@@ -20,7 +20,7 @@ public class ReadExcel {
 //    private static final String STR1 = System.getProperty("user.home") + "/Desktop";
 
     //private static final String NAME = "/cvbn/Desktop/2022.01.xlsx";
-    public static void main (String []args) throws IOException {
+    public static void main (String []args) {
         int [] arg = new int [args.length];
         for (int i = 0; i < args.length; i++) {
             arg [i] = valueOf(args [i]) ;

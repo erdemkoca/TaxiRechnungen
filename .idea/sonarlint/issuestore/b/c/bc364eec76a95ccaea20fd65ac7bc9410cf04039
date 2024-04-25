@@ -1,12 +1,0 @@
-
-]
-java:S1220""Move this file to a named package.8®Ö­Òê1J$3ca7cf65-5b6e-426e-aacf-e8c7a40e3ed4
-’
-java:S2095"JUse try-with-resources or close this "XSSFWorkbook" in a "finally" clause.(Åù…øÿÿÿÿ8ÂÙ­Òê1J$4ac09cd8-cb37-4bde-8226-a6488c5782a3
-•
-java:S3776"RRefactor this method to reduce its Cognitive Complexity from 19 to the 15 allowed.(œû¿Ø8ÅÙ­Òê1J$7e9f3157-ca06-4518-81d8-84d75f82f639
-…
-java:S1854("=Remove this useless assignment to local variable "cellValue".(Ï™óªÿÿÿÿÿ8ÇÙ­Òê1J$64d5303a-7a85-4c93-a3f2-aef2b42649fd
-~	java:S125"<This block of commented-out lines of code should be removed.(øüƒì8ÈÙ­Òê1J$f010a8d3-cfcf-4c49-be6f-80da527912fe
-v
-java:S1481(".Remove this unused "cellValue" local variable.(Ï™óªÿÿÿÿÿ8ÔÙ­Òê1J$f10274db-3b47-41b1-a489-286d765e9fad

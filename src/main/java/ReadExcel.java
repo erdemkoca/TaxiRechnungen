@@ -1,29 +1,28 @@
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.util.SystemOutLogger;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.SQLOutput;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.YearMonth;
 import java.util.Iterator;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import static java.lang.Integer.valueOf;
 
-public class ReadExcel {
+public class ReadExcel
+{
     private static final String NAME = "src/main/resources/2022.01.xlsx";
     private static final String STR1 = "src/main/resources/";
-//    private static final String STR1 = System.getProperty("user.home") + "/Desktop";
+    // private static final String STR1 = System.getProperty("user.home") + "/Desktop";
 
-    //private static final String NAME = "/cvbn/Desktop/2022.01.xlsx";
-    public static void main (String []args) {
-        int [] arg = new int [args.length];
+    public static void main(String[] args) throws IOException {
+        int[] arg = new int[args.length];
         for (int i = 0; i < args.length; i++) {
-            arg [i] = valueOf(args [i]) ;
+            arg[i] = valueOf(args[i]);
         }
         try {
             FileInputStream file = new FileInputStream(new File(NAME));
@@ -32,20 +31,16 @@ public class ReadExcel {
             Iterator<Sheet> sheets = workbook.sheetIterator();
             while (sheets.hasNext()) {
                 Sheet sh = sheets.next();
-                //System.out.println("Sheet name is" + sh.getSheetName());
-                //System.out.println("------------------");
                 Iterator<Row> iterator = sh.iterator();
                 while (iterator.hasNext()) {
                     Row row = iterator.next();
-                    Iterator <Cell> cellIterator = row.cellIterator();
+                    Iterator<Cell> cellIterator = row.cellIterator();
                     while (cellIterator.hasNext()) {
                         Cell cell = cellIterator.next();
                         String cellValue = dataFormatter.formatCellValue(cell);
-                        //System.out.println(cellValue + "\t");
                     }
-                    //System.out.println();
-
                 }
+
                 boolean line = false;
                 int k = 0;
                 for (int j = 0; j < arg.length - 2; j++) {
@@ -57,57 +52,54 @@ public class ReadExcel {
                     } else {
                         line = true;
                     }
-                    if (sh.getRow(7 + i + k).getCell(8) == null)
-                    {
+                    if (sh.getRow(7 + i + k).getCell(8) == null) {
                         sh.getRow(7 + i + k).createCell(8);
                     }
                     sh.getRow(7 + i + k).getCell(8).setCellValue(arg[i] + "." + arg[1] + "." + arg[0]);
-                    //System.out.println(sh.getRow(7 + i).getCell(8));
-                    sh.getRow(7 + i + k).getCell(10).setCellValue("Hinfahrt CHF 32.25 - Rückfahrt CHF 33.20");
-                    sh.getRow(7 + i + k).getCell(14).setCellValue(65.45);
-
+                    sh.getRow(7 + i + k).getCell(10).setCellValue("Hinfahrt CHF 48.20 - Rückfahrt CHF 48.20");
+                    sh.getRow(7 + i + k).getCell(14).setCellValue(96.40);
                 }
 
-                String firstDayDate = "1/" + args[1] + "/" + args[0];
+                YearMonth yearMonthObject = YearMonth.of(arg[0], arg[1]);
+                int lastDayOfMonth = yearMonthObject.lengthOfMonth();
+                String firstDayDate = "1." + arg[1] + "." + arg[0];
+                String lastDayDate = lastDayOfMonth + "." + arg[1] + "." + arg[0];
 
-                int lastDayOfMonth; // = Calendar.getInstance().getActualMaximum(Calendar.DATE);
-                if (args[1] == "2") {
-                    lastDayOfMonth = 28;
-                } else if (valueOf(args[1]) % 2 == 0) {
-                    lastDayOfMonth  = 30;
-                } else {
-                    lastDayOfMonth = 31;
-                }
-                String lastDayDate = lastDayOfMonth + "/" + args[1] + "/" + args[0];
-
-                firstDayDate = firstDayDate.replace("/",".");
-                lastDayDate = lastDayDate.replace("/",".");
-                sh.getRow(41).getCell(14).setCellValue((arg.length - 2) * 65.45);
-                sh.getRow(21).getCell(3).setCellValue((arg.length - 2) * 65.45);
+                sh.getRow(41).getCell(14).setCellValue(roundDownToFiveRappen((arg.length - 2) * 96.40 * 1.081));
+                sh.getRow(21).getCell(3).setCellValue(roundDownToFiveRappen((arg.length - 2) * 96.40 * 1.081));
                 sh.getRow(15).getCell(4).setCellValue("Abrechnungsperiode " + firstDayDate + " - " + lastDayDate);
                 sh.getRow(7).getCell(7).setCellValue(lastDayDate);
-                String lastTwoOfCharYear = "" + args[0].charAt(args[0].length()-2) + args[0].charAt(args[0].length()-1);
-                String invoiceNumber = "RECHNUNGSNR.: " + lastTwoOfCharYear + "." + args[1];
+                String lastTwoOfCharYear = "" + arg[0] % 100; // Simplified to get last two digits
+                String invoiceNumber = "RECHNUNGSNR.: " + lastTwoOfCharYear + "." + arg[1];
                 sh.getRow(6).getCell(7).setCellValue(invoiceNumber);
-
-
             }
-            String specificSTR = "";
-            if (args[0].length() == 1) {
-                specificSTR = STR1 + args[0]+".0" + args[1] + ".xlsx";
-            } else {
-                specificSTR = STR1 + args[0]+"." + args[1] + ".xlsx";
+            // -8 +3
 
-            }
+            String specificSTR = STR1 + arg[0] + "." + (arg[1] < 10 ? "0" : "") + arg[1] + ".xlsx";
             FileOutputStream out = new FileOutputStream(specificSTR);
             workbook.write(out);
             out.close();
             workbook = new XSSFWorkbook(new FileInputStream(new File(specificSTR)));
             workbook.close();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
+
+    public static double roundDownToFiveRappen(double value) {
+        // Multiply by 100 to work with the value in Rappen accurately
+        double rappen = value * 100;
+        // Find the remainder when dividing by 10 (to identify the last digit)
+        double remainder = rappen % 10;
+        // Subtract the remainder if it's less than 5, otherwise subtract the remainder and add 5 to round down to the nearest 5
+        if (remainder < 5) {
+            rappen -= remainder;
+        } else {
+            rappen = rappen - remainder + 5;
+        }
+        // Convert back to CHF and round to 2 decimal places if necessary
+        return Math.floor(rappen) / 100;
+    }
+
+
 }

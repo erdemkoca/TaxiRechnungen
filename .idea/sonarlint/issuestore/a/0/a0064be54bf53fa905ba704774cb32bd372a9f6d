@@ -1,0 +1,32 @@
+
+X
+java:S1643""Use a StringBuilder instead.(„î©¨J$3ebdec9c-b469-4aba-8b6e-389bea2c26b5
+]
+java:S16437"Use a StringBuilder instead.(ÅüÜ¹úÿÿÿÿJ$2d3ac6f3-d859-4739-84c3-59406a9db9b9
+V
+java:S1220""Move this file to a named package.J$ba362de4-f141-437c-909f-be58993ab514
+r
+java:S11537"1Directly append the argument of String.valueOf().(ÅüÜ¹úÿÿÿÿJ$45177669-6f21-46d2-a2bd-df7b6119f117
+“
+java:S3776"RRefactor this method to reduce its Cognitive Complexity from 18 to the 15 allowed.(²Á€œüÿÿÿÿJ$0d5710ae-fcbc-4819-a924-b31c57c3c99c
+x
+java:S18543"7Remove this useless assignment to local variable "day".(–Ÿ­ÇüÿÿÿÿJ$9550a24f-04ca-4a58-8836-e588834524b6
+k
+java:S1197"*Move the array designators [] to the type.(²Á€œüÿÿÿÿJ$710285c3-4552-4d4a-9ccf-94176d7cd08a
+f	java:S106"+Replace this use of System.out by a logger.(ÝÿÎóJ$80faacfb-1e5c-4e12-9eb8-d48b2d913583
+f	java:S106"+Replace this use of System.out by a logger.(ŒÓù‡J$b843e067-23d5-4d1f-8bb7-77d46db03fa0
+k	java:S106"+Replace this use of System.out by a logger.(ºÑ¡íÿÿÿÿÿJ$a6a61fdd-7e05-4a8d-bdd4-6e3d53df44eb
+k	java:S106 "+Replace this use of System.out by a logger.(ûª´ŒþÿÿÿÿJ$733fac2c-d0f3-481f-853f-fe62e73869e3
+f	java:S106&"+Replace this use of System.out by a logger.(§ëî–J$660fcb54-72ed-4759-8678-21c968b14926
+f	java:S106'"+Replace this use of System.out by a logger.(îÑ¶ÁJ$7256bc37-ee51-44ff-9aa8-ff79c32e6fe5
+f
+java:S1197*"*Move the array designators [] to the type.(‡šÏÚJ$881c7030-890f-4370-aa62-d9946ffe8316
+r
+java:S1481,"1Remove this unused "errorCounter" local variable.(ã´“”úÿÿÿÿJ$bc436cfd-03a9-48d2-853c-a2ce5bd3da50
+k
+java:S11973"*Move the array designators [] to the type.(–Ÿ­ÇüÿÿÿÿJ$ac902bdc-938c-4bd4-85ad-20d89d90e29a
+i
+java:S14813"(Remove this unused "day" local variable.(–Ÿ­ÇüÿÿÿÿJ$848a95b3-f4e6-43c2-885d-3a68d0d1e832
+k	java:S1065"+Replace this use of System.out by a logger.(Û¼–³ÿÿÿÿÿJ$92b01662-b9ca-4e08-a2ec-7e4bf10922b1
+f
+java:S1197;"*Move the array designators [] to the type.(Ì²öÿJ$59f50186-14a7-4ea8-8a4e-60f428b82dc9

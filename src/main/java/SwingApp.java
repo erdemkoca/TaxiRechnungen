@@ -2,15 +2,24 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 public class SwingApp {
 	private static final JFrame frame = new JFrame("Invoice Generator");
 	private static final List<JToggleButton> dayButtons = new ArrayList<>();
-	// These are already class level, ensuring they are accessible throughout the class
-	private static final JTextField yearText = new JTextField(20);
-	private static final JTextField monthText = new JTextField(20);
+	private static final JComboBox<Integer> yearComboBox = new JComboBox<>();
+	private static final JComboBox<String> monthComboBox = new JComboBox<>();
+	private static final JPanel daysPanel = new JPanel(new GridLayout(5, 7, 5, 5));
+	private static final JLabel totalSelectedDaysLabel = new JLabel("Toplam seçili gün sayısı: 0");
+	// Verlagern Sie die Definition von turkishMonths, um sie als Klassenvariable zu machen
+	private static final String[] turkishMonths = {"Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"};
+
+
+
 
 	public static void createAndShowGUI() {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -23,23 +32,55 @@ public class SwingApp {
 	}
 
 	private static void placeComponents(JPanel panel) {
-		JLabel yearLabel = new JLabel("Year:");
+		JLabel yearLabel = new JLabel("Sene:");
 		yearLabel.setBounds(10, 20, 80, 25);
 		panel.add(yearLabel);
 
-		yearText.setBounds(100, 20, 165, 25);
-		panel.add(yearText);
+		// Populate the yearComboBox with years from 1990 to current year + 5 (for future selection)
+		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		int futureYear = currentYear + 5; // Allow selection up to 5 years into the future
+		for (int year = 1990; year <= futureYear; year++) {
+			yearComboBox.addItem(year);
+		}
+		yearComboBox.setBounds(100, 20, 165, 25);
+		panel.add(yearComboBox);
 
-		JLabel monthLabel = new JLabel("Month:");
-		monthLabel.setBounds(10, 50, 80, 25);
+		// Set the current year as the default selected item
+		yearComboBox.setSelectedItem(currentYear);
+
+		// Month label
+		JLabel monthLabel = new JLabel("Ay:");
+		monthLabel.setBounds(10, 55, 80, 25); // Adjusted positions
 		panel.add(monthLabel);
 
-		monthText.setBounds(100, 50, 165, 25);
-		panel.add(monthText);
+		// Populate the monthComboBox with Turkish month names
+		String[] turkishMonths = {"Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+				"Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"};
+
+		// Populate the monthComboBox with months
+		for (String month : turkishMonths) {
+			monthComboBox.addItem(month);
+		}
+		monthComboBox.setBounds(100, 55, 165, 25);
+		panel.add(monthComboBox);
+
+		// Set the default selected month to the month before the current month
+		int currentMonth = Calendar.getInstance().get(Calendar.MONTH); // Note: January = 0 in Calendar
+		// int defaultMonth = currentMonth == 0 ? 12 : currentMonth; // Adjust for January
+		// monthComboBox.setSelectedItem(defaultMonth);
+		if (currentMonth == 0) {
+			yearComboBox.setSelectedItem(currentYear - 1); // Set year to last year if January
+			monthComboBox.setSelectedItem(turkishMonths[11]); // Set month to December
+		} else {
+			monthComboBox.setSelectedItem(turkishMonths[currentMonth - 1]);
+		}
 
 		// Day selection panel
-		JPanel daysPanel = new JPanel(new GridLayout(5, 7, 5, 5)); // Grid of 5 rows and 7 columns with padding
-		daysPanel.setBounds(10, 110, 760, 100); // You may need to adjust the size and position
+		JLabel dayLabel = new JLabel("Günler:");
+		dayLabel.setBounds(10, 85, 80, 25);
+		panel.add(dayLabel);
+
+		daysPanel.setBounds(10, 110, 760, 100);
 		panel.add(daysPanel);
 
 		for (int day = 1; day <= 31; day++) {
@@ -49,15 +90,23 @@ public class SwingApp {
 		}
 
 		// Generate Button and its ActionListener
-		JButton generateButton = new JButton("Generate");
+		JButton generateButton = new JButton("Fatura oluştur");
 		generateButton.setBounds(10, 220, 120, 25); // Adjust position as needed
 		panel.add(generateButton);
+
+		totalSelectedDaysLabel.setBounds(10, 320, 300, 25); // Position und Größe anpassen
+		panel.add(totalSelectedDaysLabel);
 
 		generateButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String year = yearText.getText();
-				String month = monthText.getText();
+				String selectedYear = yearComboBox.getSelectedItem().toString();
+				String selectedMonthName = monthComboBox.getSelectedItem().toString();
+
+				// Konvertieren des Monatsnamens in eine Zahl
+				int selectedMonth = Arrays.asList(turkishMonths).indexOf(selectedMonthName) + 1;
+				String formattedMonth = selectedMonth < 10 ? "0" + selectedMonth : String.valueOf(selectedMonth);
+
 				List<String> selectedDays = new ArrayList<>();
 				for (JToggleButton button : dayButtons) {
 					if (button.isSelected()) {
@@ -65,22 +114,67 @@ public class SwingApp {
 					}
 				}
 
-				// Prepare the arguments array with year, month, and selected days
-				String[] arguments = new String[2 + selectedDays.size()];
-				arguments[0] = year;
-				arguments[1] = month;
-				System.arraycopy(selectedDays.toArray(new String[0]), 0, arguments, 2, selectedDays.size());
+				// Bereite die Argumente vor, einschließlich der konvertierten Monatszahl
+				List<String> arguments = new ArrayList<>();
+				arguments.add(selectedYear);
+				arguments.add(formattedMonth);
+				arguments.addAll(selectedDays);
 
 				try {
-					ReadExcel.main(arguments);
-					// System.out.println("Selected Dates: " + String.join(", ", arguments));
+					ReadExcel.main(arguments.toArray(new String[0])); // Stelle sicher, dass ReadExcel.main diese Argumente verarbeiten kann
+					frame.dispose(); // Schließe das GUI
 				} catch (Exception ex) {
 					ex.printStackTrace();
 					JOptionPane.showMessageDialog(frame, "Error generating the Excel file.", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
+
+
+		// Listener für Monats- und Jahres-JComboBox hinzufügen
+		ActionListener updateDaysActionListener = e -> {
+			updateDayButtons(); // Aktualisiert die Tage basierend auf dem ausgewählten Monat
+			updateTotalSelectedDays(); // Aktualisiert die Gesamtzahl der ausgewählten Tage
+		};
+		yearComboBox.addActionListener(updateDaysActionListener);
+		monthComboBox.addActionListener(updateDaysActionListener);
+
+		// Initialisiere die Tage basierend auf dem aktuellen Monat und Jahr
+		updateDayButtons();
+
+
 	}
+
+	private static void updateDayButtons() {
+		daysPanel.removeAll();
+		dayButtons.clear();
+
+		Integer year = (Integer) yearComboBox.getSelectedItem();
+		String selectedMonthName = (String) monthComboBox.getSelectedItem();
+		// Verwenden Sie turkishMonths, um den Monat in eine Zahl umzuwandeln
+		int month = Arrays.asList(turkishMonths).indexOf(selectedMonthName) + 1;
+
+		if (year == null || selectedMonthName == null) return;
+
+		int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
+		for (int day = 1; day <= daysInMonth; day++) {
+			JToggleButton dayButton = new JToggleButton(String.valueOf(day));
+			dayButton.addActionListener(e -> updateTotalSelectedDays());
+			dayButtons.add(dayButton);
+			daysPanel.add(dayButton);
+		}
+
+		daysPanel.revalidate();
+		daysPanel.repaint();
+	}
+
+
+	// Methode zum Aktualisieren der Anzeige der Gesamtzahl der ausgewählten Tage
+	private static void updateTotalSelectedDays() {
+		long count = dayButtons.stream().filter(AbstractButton::isSelected).count(); // Zählt die ausgewählten Tage
+		totalSelectedDaysLabel.setText("Toplam seçili gün sayısı: " + count); // Aktualisiert das Label
+	}
+
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(SwingApp::createAndShowGUI);

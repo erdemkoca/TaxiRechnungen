@@ -2,7 +2,7 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
-import org.apache.commons.compress.archivers.dump.InvalidFormatException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -42,7 +42,7 @@ public class ReadExcel {
             workbook.close();
 
             // Convert Excel to PDF
-            //convertExcelToPdf(specificSTR, specificSTR.replace(".xlsx", ".pdf"));
+            convertExcelToPdf(specificSTR, specificSTR.replace(".xlsx", ".pdf"));
         } catch (FileNotFoundException e) {
             System.out.println("Datei wurde nicht gefunden: " + e.getMessage());
         } catch (IOException e) {
@@ -100,31 +100,33 @@ public class ReadExcel {
         }
     }
 
-    private static void convertExcelToPdf(String excelFilePath, String pdfFilePath) throws IOException, InvalidFormatException, org.apache.poi.openxml4j.exceptions.InvalidFormatException {
-        Workbook workbook = new XSSFWorkbook(new File(excelFilePath));
-        PdfWriter writer = new PdfWriter(pdfFilePath);
-        PdfDocument pdfDocument = new PdfDocument(writer);
-        Document document = new Document(pdfDocument);
+    private static void convertExcelToPdf(String excelFilePath, String pdfFilePath) throws IOException, InvalidFormatException {
+        // Öffne die Excel-Datei mit Apache POI
+        try (Workbook workbook = new XSSFWorkbook(new File(excelFilePath));
+             FileOutputStream fos = new FileOutputStream(new File(pdfFilePath));
+             PdfWriter writer = new PdfWriter(fos);
+             PdfDocument pdfDoc = new PdfDocument(writer);
+             Document doc = new Document(pdfDoc)) {
 
-        DataFormatter formatter = new DataFormatter();
-        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-            Sheet sheet = workbook.getSheetAt(i);
-            document.add(new Paragraph("Sheet: " + sheet.getSheetName()));
+            // Durchlaufe alle Sheets in der Workbook
+            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                Sheet sheet = workbook.getSheetAt(i);
+                doc.add(new Paragraph("Sheet: " + sheet.getSheetName()));
 
-            for (Row row : sheet) {
-                StringBuilder rowContent = new StringBuilder();
-                for (Cell cell : row) {
-                    String cellValue = formatter.formatCellValue(cell);
-                    rowContent.append(cellValue).append("\t");
+                // Durchlaufe alle Zeilen und Zellen des Sheets
+                for (Row row : sheet) {
+                    StringBuilder rowContent = new StringBuilder();
+                    for (Cell cell : row) {
+                        String cellValue = new DataFormatter().formatCellValue(cell);
+                        rowContent.append(cellValue).append("\t");
+                    }
+                    doc.add(new Paragraph(rowContent.toString()));
                 }
-                document.add(new Paragraph(rowContent.toString()));
+                doc.add(new Paragraph("\n"));
             }
-            document.add(new Paragraph("\n"));
         }
-
-        document.close();
-        workbook.close();
     }
+
 
 
 

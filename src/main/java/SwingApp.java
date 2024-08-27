@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -97,13 +98,44 @@ public class SwingApp {
 		totalSelectedDaysLabel.setBounds(10, 320, 300, 25); // Position und Größe anpassen
 		panel.add(totalSelectedDaysLabel);
 
+//		generateButton.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				String selectedYear = yearComboBox.getSelectedItem().toString();
+//				String selectedMonthName = monthComboBox.getSelectedItem().toString();
+//
+//				// Konvertieren des Monatsnamens in eine Zahl
+//				int selectedMonth = Arrays.asList(turkishMonths).indexOf(selectedMonthName) + 1;
+//				String formattedMonth = selectedMonth < 10 ? "0" + selectedMonth : String.valueOf(selectedMonth);
+//
+//				List<String> selectedDays = new ArrayList<>();
+//				for (JToggleButton button : dayButtons) {
+//					if (button.isSelected()) {
+//						selectedDays.add(button.getText());
+//					}
+//				}
+//
+//				// Bereite die Argumente vor, einschließlich der konvertierten Monatszahl
+//				List<String> arguments = new ArrayList<>();
+//				arguments.add(selectedYear);
+//				arguments.add(formattedMonth);
+//				arguments.addAll(selectedDays);
+//
+//				try {
+//					ReadExcel.main(arguments.toArray(new String[0])); // Stelle sicher, dass ReadExcel.main diese Argumente verarbeiten kann
+//					frame.dispose(); // Schließe das GUI
+//				} catch (Exception ex) {
+//					ex.printStackTrace();
+//					JOptionPane.showMessageDialog(frame, "Error generating the Excel file.", "Error", JOptionPane.ERROR_MESSAGE);
+//				}
+//			}
+//		});
+
 		generateButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String selectedYear = yearComboBox.getSelectedItem().toString();
 				String selectedMonthName = monthComboBox.getSelectedItem().toString();
-
-				// Konvertieren des Monatsnamens in eine Zahl
 				int selectedMonth = Arrays.asList(turkishMonths).indexOf(selectedMonthName) + 1;
 				String formattedMonth = selectedMonth < 10 ? "0" + selectedMonth : String.valueOf(selectedMonth);
 
@@ -114,21 +146,32 @@ public class SwingApp {
 					}
 				}
 
-				// Bereite die Argumente vor, einschließlich der konvertierten Monatszahl
-				List<String> arguments = new ArrayList<>();
-				arguments.add(selectedYear);
-				arguments.add(formattedMonth);
-				arguments.addAll(selectedDays);
-
 				try {
-					ReadExcel.main(arguments.toArray(new String[0])); // Stelle sicher, dass ReadExcel.main diese Argumente verarbeiten kann
-					frame.dispose(); // Schließe das GUI
+					// Get the directory where the JAR file is located
+					String jarPath = new File(SwingApp.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+					String dirPath = new File(jarPath).getParent();
+
+					// Create a new directory named 'Taxirechnungen' if it doesn't exist
+					File taxirechnungenDir = new File(dirPath, "Taxirechnungen");
+					if (!taxirechnungenDir.exists()) {
+						taxirechnungenDir.mkdir();
+					}
+
+					// Generate the full path to the PDF file
+					String fileName = selectedYear + "." + formattedMonth + ".pdf";
+					String pdfPath = new File(taxirechnungenDir, fileName).getPath();
+
+					// Create the PDF
+					TextToPdf.createPdfFromGuiData(pdfPath, Integer.parseInt(selectedYear), formattedMonth, selectedDays);
+
+					JOptionPane.showMessageDialog(frame, "PDF erfolgreich generiert.", "Erfolg", JOptionPane.INFORMATION_MESSAGE);
 				} catch (Exception ex) {
 					ex.printStackTrace();
-					JOptionPane.showMessageDialog(frame, "Error generating the Excel file.", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(frame, "Fehler beim Generieren der PDF-Datei.", "Fehler", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
+
 
 
 		// Listener für Monats- und Jahres-JComboBox hinzufügen

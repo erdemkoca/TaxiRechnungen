@@ -29,14 +29,20 @@ public class ReadExcel {
 
             processWorkbook(workbook, dataFormatter, arg);
 
-            String specificSTR = STR1 + arg[0] + "." + (arg[1] < 10 ? "0" : "") + arg[1] + ".xlsx";
+            //String specificSTR = STR1 + arg[0] + "." + (arg[1] < 10 ? "0" : "") + arg[1] + ".xlsx";
+
+            // implementation for the Jar-Dir saving
+            String jarPath = new File(ReadExcel.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+            String dirPath = new File(jarPath).getParent();
+
+            String specificSTR = dirPath + File.separator + arg[0] + "." + (arg[1] < 10 ? "0" : "") + arg[1] + ".xlsx";
             try (FileOutputStream out = new FileOutputStream(specificSTR)) {
                 workbook.write(out);
             }
             workbook.close();
 
             // Convert Excel to PDF
-            convertExcelToPdf(specificSTR, specificSTR.replace(".xlsx", ".pdf"));
+            //convertExcelToPdf(specificSTR, specificSTR.replace(".xlsx", ".pdf"));
         } catch (FileNotFoundException e) {
             System.out.println("Datei wurde nicht gefunden: " + e.getMessage());
         } catch (IOException e) {
